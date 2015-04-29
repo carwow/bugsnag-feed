@@ -1,0 +1,12 @@
+{
+  "name": "sinatra-heroku-cedar-template",
+  "description": "Bugsnag CCTray style feed",
+  "keywords": [
+    "sinatra",
+    "heroku",
+    "cedar",
+    "template"
+  ],
+  "website": "https://github.com/carwow/bugsnag-feed",
+  "repository": "https://github.com/carwow/bugsnag-feed"
+}
