@@ -11,6 +11,8 @@ GEM
       thor (>= 0.13.6)
     multipart-post (2.0.0)
     rack (1.4.0)
+    rack-cache (1.6.1)
+      rack (>= 0.4)
     rack-protection (1.2.0)
       rack
     sawyer (0.6.0)
@@ -30,4 +32,8 @@ PLATFORMS
 DEPENDENCIES
   bugsnag-api
   foreman
+  rack-cache
   sinatra
+
+BUNDLED WITH
+   1.11.2
