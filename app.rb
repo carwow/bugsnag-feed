@@ -1,4 +1,5 @@
 get '/projects' do
+  cache_control :public, max_age: 60
   content_type 'text/html'
   auth_token = params[:auth_token]
   client = Bugsnag::Api::Client.new(auth_token: auth_token)
