@@ -1,7 +1,7 @@
 set :cache, Dalli::Client.new
 
 module CacheResponse
-  def cache(key:, default: [], duration: 60)
+  def cache(key:, default: [], duration: 120)
     response = nil
     settings.cache.fetch(key) do
       begin
