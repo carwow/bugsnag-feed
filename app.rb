@@ -3,10 +3,11 @@ require_relative 'projects.rb'
 get '/projects' do
   cache_control :public, max_age: 60
   content_type 'text/html'
+  auth_token = params[:auth_token]
 
   html = "<html><body>"
   html << "<dl>"
-  Project.all(token: params[:auth_token]).each do |project|
+  Project.all(token: auth_token).each do |project|
     project_url = url("/projects/#{project.id}?auth_token=#{auth_token}")
     html << "<dt>#{project.name}</dt><dd><a href='#{project_url}'>#{project_url}</a></dd>"
     { name: project.name, id: project.id}
