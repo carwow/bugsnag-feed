@@ -17,12 +17,12 @@ get '/projects' do
 end
 
 get '/projects/:project_id' do
-  cache_control :public, max_age: 120
+  cache_control :public, max_age: 90
   content_type 'text/xml'
   auth_token = params[:auth_token]
 
   project = Project.find(params[:project_id], token: auth_token)
-  return status 500 if project.nil?
+  return status 500 if project.nil? || project.status.nil?
 
   %Q{<?xml version="1.0" encoding="UTF-8"?>
       <Projects>

@@ -1,16 +1,20 @@
-set :cache, Dalli::Client.new
-
 module CacheResponse
-  def cache(key:, default: [], duration: 120)
+  def cache(key:, default: [], duration: 127)
     response = nil
+
+    puts "[Cache] #{key} Lookup"
     settings.cache.fetch(key) do
       begin
+        puts "[Api] #{key} Data fetch"
         response = yield
       rescue
+        puts "[Api] #{key} Error"
         return default
       end
 
-      settings.cache.set(key, response, 300)
+      puts "[Cache] #{key} Persisting.."
+      settings.cache.set(key, response, duration)
+      puts "[Cache] #{key} Persisted.."
       response
     end
   end
@@ -40,16 +44,18 @@ class Project
   end
 
   def status
+    errors = Errors.by_project(self)
+    return nil if errors.nil?
+
     status = 'Success'
-    status = 'Error' if Errors.by_project(self).any?
+    status = 'Error' if errors.any?
     status
   end
 
   private
   def self.all_projects(token:, client:)
     cache(key: "#{token}:all_projects", duration: 300) do
-      projects = client.projects
-      return projects
+      client.projects
     end
   end
 end
@@ -58,9 +64,8 @@ class Errors
   extend CacheResponse
 
   def self.by_project(project)
-    cache(key: "#{project}:open_errors") do
-      errors = project.client.errors(project.id, per_page: 1, status: 'open')
-      return errors
+    cache(key: "#{project.id}:open_errors", default: nil) do
+      project.client.errors(project.id, per_page: 1, status: 'open')
     end
   end
 end
