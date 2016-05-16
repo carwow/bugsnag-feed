@@ -1,5 +1,5 @@
 module CacheResponse
-  def cache(key:, default: [], duration: 127)
+  def cache(key:, default: [], expires_in: 127)
     response = nil
 
     puts "[Cache] #{key} Lookup"
@@ -13,7 +13,7 @@ module CacheResponse
       end
 
       puts "[Cache] #{key} Persisting.."
-      settings.cache.set(key, response, duration)
+      settings.cache.set(key, response, expires_in)
       puts "[Cache] #{key} Persisted.."
       response
     end
@@ -54,7 +54,7 @@ class Project
 
   private
   def self.all_projects(token:, client:)
-    cache(key: "#{token}:all_projects", duration: 300) do
+    cache(key: "#{token}:all_projects", expires_in: 300) do
       client.projects
     end
   end
