@@ -11,6 +11,7 @@ class Project
     end
     
     projects.map do |project|
+      begin
       key = "bugsnag-open-errors-#{project.id}"
 
       open_errors_count = self.fetch(key) do
@@ -19,6 +20,10 @@ class Project
 
       self.new(project: project, 
                open_errors_count: open_errors_count)
+
+      rescue Bugsnag::Api::ClientError => e
+        $stdout.puts "Can't retrieve errors for project #{project.name}, probably due to API rate limit"
+      end
     end
   end
 
@@ -34,6 +39,10 @@ class Project
   end
 
   def self.fetch(key, expires_in: 90)
+    if ENV['DISABLE_CACHING']
+      return yield
+    end
+
     cache = Dalli::Client.new
     value = cache.get(key)
     if value.nil?

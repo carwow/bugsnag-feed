@@ -1,7 +1,7 @@
 require_relative 'projects.rb'
 
 get '/projects' do
-  cache_control :public, max_age: 90
+  cache_control :public, max_age: 60
   content_type 'text/xml'
   auth_token = params[:auth_token]
 
