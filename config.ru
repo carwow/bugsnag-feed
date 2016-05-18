@@ -3,11 +3,11 @@ require 'bundler'
 
 Bundler.require
 
-set :cache, Dalli::Client.new
+dalli_client = Dalli::Client.new
 
 use Rack::Cache,
-  metastore:    'file:/tmp/bugsnagfeed/cache/rack/meta',
-  entitystore:  'file:/tmp/bugsnagfeed/cache/rack/body',
+  metastore:    dalli_client,
+  entitystore:  dalli_client,
   verbose:      true
 
 $stdout.sync = true
