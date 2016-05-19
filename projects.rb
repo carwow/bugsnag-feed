@@ -24,7 +24,7 @@ class Project
       rescue Bugsnag::Api::ClientError => e
         $stdout.puts "Can't retrieve errors for project #{project.name}, probably due to API rate limit"
       end
-    end
+    end.compact
   end
 
   def initialize(project:, open_errors_count:)
