@@ -8,7 +8,7 @@ get '/projects' do
   result = '<?xml version="1.0" encoding="UTF-8"?>'
   result << '<Projects>'
   Project.all(token: auth_token).each do |project|
-    result << %Q{<Project lastBuildStatus="#{project.status}" name="bugsnag - #{project.name}" activity="Sleeping" webUrl="#{project.html_url}"></Project>}
+    result << %Q{<Project lastBuildStatus="#{project.status}" name="bugsnag - #{project.name}" activity="Sleeping" webUrl="#{project.url}"></Project>}
   end
   result << '</Projects>'
   result
