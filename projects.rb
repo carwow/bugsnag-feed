@@ -65,7 +65,7 @@ class Project
       end
     end
     cache = Dalli::Client.new
-    cache.set('last_batch_run', {index: next_batch_to_run, time: 0.seconds.ago})
+    cache.set('last_batch_run', {index: next_batch_to_run, time: Time.now})
 
     projects
   end
@@ -101,12 +101,13 @@ class Project
   end
 
   def self.should_update_projects?
-    (Time.now - last_batch_run[:time]) > 30.seconds
+    (Time.now - last_batch_run[:time]) > 30
   end
 
   def self.last_batch_run
     self.fetch('last_batch_run', expires_in: nil) do
-      {index: PROJECT_BATCHES.size-1, time: 1.hour.ago}
+      one_hour_ago = Time.now - 3600
+      {index: PROJECT_BATCHES.size-1, time: one_hour_ago}
     end
   end
 
