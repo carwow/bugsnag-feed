@@ -1,5 +1,7 @@
 class Project
   extend Forwardable
+  attr_reader :name
+  attr_reader :url
 
   PROJECT_BATCHES =
     [
@@ -36,15 +38,19 @@ class Project
     ]
 
   def initialize(project:, open_errors_count:)
-    @name = project[:name],
-    @url = project[:url],
-    @open_errors_count = open_errors_count
+    @name = project[:name]
+    @url = project[:url]
+    @open_errors_count = open_errors_count || 0
   end
 
   def self.all(token:)
     projects = get_all_projects_from_cache
 
-    update_projects(projects, token) if should_update_projects?
+    if should_update_projects?
+      update_projects(projects, token).values
+    else
+      projects.values
+    end
   end
 
   def self.update_projects(projects, token)
@@ -55,7 +61,7 @@ class Project
     projects_to_update.each do |project|
       begin
         open_errors_count = self.fetch(cache_key(project)) do
-          client.errors(project_id, {status: 'open'}).count
+          client.errors(project[:id], {status: 'open'}).count
         end
 
         projects[project[:id]] = self.new(project: project, open_errors_count: open_errors_count)
@@ -112,7 +118,7 @@ class Project
   end
 
   def self.next_batch_to_run
-    last_batch_run[:index]+1 % PROJECT_BATCHES.size
+    (last_batch_run[:index]+1) % PROJECT_BATCHES.size
   end
 
 end
