@@ -66,7 +66,7 @@ class Project
         end
 
         updated = self.new(project: project, open_errors_count: open_errors_count)
-        puts "updated: #{updated}"
+        puts "updated: #{updated.inspect}"
         projects[project[:id]] = updated
 
       rescue Bugsnag::Api::ClientError => e
