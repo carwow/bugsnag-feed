@@ -54,6 +54,7 @@ class Project
   end
 
   def self.update_projects(projects, token)
+    puts 'UPDATING PROJECTS: '
     client = Bugsnag::Api::Client.new(auth_token: token)
 
     next_batch_to_run = self.next_batch_to_run
@@ -64,7 +65,9 @@ class Project
           client.errors(project[:id], {status: 'open'}).count
         end
 
-        projects[project[:id]] = self.new(project: project, open_errors_count: open_errors_count)
+        updated = self.new(project: project, open_errors_count: open_errors_count)
+        puts "updated: #{updated}"
+        projects[project[:id]] = updated
 
       rescue Bugsnag::Api::ClientError => e
         $stdout.puts "Can't retrieve errors for project #{project.name}, probably due to API rate limit"
