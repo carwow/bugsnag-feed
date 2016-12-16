@@ -54,6 +54,8 @@ class Project
   end
 
   def self.update_projects(projects, token)
+    cache = Dalli::Client.new
+
     puts 'UPDATING PROJECTS: '
     client = Bugsnag::Api::Client.new(auth_token: token)
 
@@ -61,9 +63,8 @@ class Project
     projects_to_update = PROJECT_BATCHES[next_batch_to_run]
     projects_to_update.each do |project|
       begin
-        open_errors_count = self.fetch(cache_key(project)) do
-          client.errors(project[:id], {status: 'open'}).count
-        end
+        open_errors_count = client.errors(project[:id], {status: 'open'}).count
+        cache.set(cache_key(project), open_errors_count)
 
         updated = self.new(project: project, open_errors_count: open_errors_count)
         puts "updated: #{updated.inspect}"
@@ -73,9 +74,8 @@ class Project
         $stdout.puts "Can't retrieve errors for project #{project.name}, probably due to API rate limit"
       end
     end
-    cache = Dalli::Client.new
-    cache.set('last_batch_run', {index: next_batch_to_run, time: Time.now})
 
+    cache.set('last_batch_run', {index: next_batch_to_run, time: Time.now})
     projects
   end
 
